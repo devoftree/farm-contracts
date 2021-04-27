@@ -6,6 +6,7 @@
    "dependencies": {
       "@ethersproject/solidity": "^5.0.4",
       "@openzeppelin/contracts": "^3.2.0",
+      "@pancakeswap/pancake-swap-lib": "^0.0.4",
       "@truffle/hdwallet-provider": "^1.1.0",
       "@types/chai": "^4.2.6",
       "@types/mocha": "^5.2.7",
@@ -46,6 +47,6 @@
    },
    "scripts": {
       "test": "truffle test test/smart_farm_8decimals.test.js --network dev --bail",
-      "live": "truffle migrate --network dev --f 1 --to 1 && nodemon --exec yarn test -e sol,js"
+      "live": "truffle migrate --network dev --f 2 --to 2 && nodemon --exec yarn test -e sol,js"
    }
 }
