@@ -25,7 +25,7 @@ describe('TreeFarm', function () {
         await this.lp.transfer(c, deposit, {from: _deployer});
         await this.lp.transfer(d, deposit, {from: _deployer});
 
-        const _rewardPerBlock = web3.utils.toWei('10');
+        const _rewardPerBlock = web3.utils.toWei('1');
         const _startBlock = 1;
         const _bonusEndBlock = _startBlock + 3600;
 
@@ -51,36 +51,38 @@ describe('TreeFarm', function () {
             const amount = web3.utils.toWei('100');
 
             await this.lp.approve(this.pool.address, amount, {from: a});
-            await this.lp.approve(this.pool.address, amount, {from: b});
-            await this.lp.approve(this.pool.address, amount, {from: c});
-            await this.lp.approve(this.pool.address, amount, {from: d});
+            // await this.lp.approve(this.pool.address, amount, {from: b});
+            // await this.lp.approve(this.pool.address, amount, {from: c});
+            // await this.lp.approve(this.pool.address, amount, {from: d});
 
             await this.pool.deposit(amount, {from: a});
-            await this.pool.deposit(amount, {from: b});
-            await this.pool.deposit(amount, {from: c});
-            await this.pool.deposit(amount, {from: d});
+            // await this.pool.deposit(amount, {from: b});
+            // await this.pool.deposit(amount, {from: c});
+            // await this.pool.deposit(amount, {from: d});
 
             time.advanceBlock();
-
-            console.log('a', web3.utils.fromWei((await this.pool.pendingReward(a, {from: a})), 'ether').toString() );
-            console.log('b', web3.utils.fromWei((await this.pool.pendingReward(b, {from: b})), 'ether').toString() );
-            console.log('c', web3.utils.fromWei((await this.pool.pendingReward(c, {from: c})), 'ether').toString() );
-            console.log('d', web3.utils.fromWei((await this.pool.pendingReward(d, {from: d})), 'ether').toString() );
+            console.log('1 block=', web3.utils.fromWei((await this.pool.pendingReward(a, {from: a})), 'ether').toString() );
+            time.advanceBlock();
+            console.log('2 block=', web3.utils.fromWei((await this.pool.pendingReward(a, {from: a})), 'ether').toString() );
+            // console.log('b', web3.utils.fromWei((await this.pool.pendingReward(b, {from: b})), 'ether').toString() );
+            // console.log('c', web3.utils.fromWei((await this.pool.pendingReward(c, {from: c})), 'ether').toString() );
+            // console.log('d', web3.utils.fromWei((await this.pool.pendingReward(d, {from: d})), 'ether').toString() );
 
             await this.pool.withdraw(amount, {from: a});
-            await this.pool.withdraw(amount, {from: b});
-            await this.pool.withdraw(amount, {from: c});
-            await this.pool.withdraw(amount, {from: d});
+            // await this.pool.withdraw(amount, {from: b});
+            // await this.pool.withdraw(amount, {from: c});
+            // await this.pool.withdraw(amount, {from: d});
 
             expect(web3.utils.fromWei((await this.lp.balanceOf(a, {from: a})), 'ether')).to.be.equal('100');
-            expect(web3.utils.fromWei((await this.lp.balanceOf(b, {from: b})), 'ether')).to.be.equal('100');
-            expect(web3.utils.fromWei((await this.lp.balanceOf(c, {from: c})), 'ether')).to.be.equal('100');
-            expect(web3.utils.fromWei((await this.lp.balanceOf(d, {from: d})), 'ether')).to.be.equal('100');
+            // expect(web3.utils.fromWei((await this.lp.balanceOf(b, {from: b})), 'ether')).to.be.equal('100');
+            // expect(web3.utils.fromWei((await this.lp.balanceOf(c, {from: c})), 'ether')).to.be.equal('100');
+            // expect(web3.utils.fromWei((await this.lp.balanceOf(d, {from: d})), 'ether')).to.be.equal('100');
 
-            expect(web3.utils.fromWei((await this.rewardToken.balanceOf(a, {from: a})), 'ether')).to.be.equal('23.333333333333333333');
-            expect(web3.utils.fromWei((await this.rewardToken.balanceOf(b, {from: b})), 'ether')).to.be.equal('16.666666666666666666');
-            expect(web3.utils.fromWei((await this.rewardToken.balanceOf(c, {from: c})), 'ether')).to.be.equal('16.666666666666666666');
-            expect(web3.utils.fromWei((await this.rewardToken.balanceOf(d, {from: d})), 'ether')).to.be.equal('23.333333333333333333');
+            expect(web3.utils.fromWei((await this.rewardToken.balanceOf(a, {from: a})), 'ether')).to.be.equal('3');
+            console.log('withdraw must be 3 (2 blocks + withdraw):', web3.utils.fromWei((await this.rewardToken.balanceOf(a, {from: a})), 'ether').toString() );
+            // expect(web3.utils.fromWei((await this.rewardToken.balanceOf(b, {from: b})), 'ether')).to.be.equal('16.666666666666666666');
+            // expect(web3.utils.fromWei((await this.rewardToken.balanceOf(c, {from: c})), 'ether')).to.be.equal('16.666666666666666666');
+            // expect(web3.utils.fromWei((await this.rewardToken.balanceOf(d, {from: d})), 'ether')).to.be.equal('23.333333333333333333');
         });
     });
 

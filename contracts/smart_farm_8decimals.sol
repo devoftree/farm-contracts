@@ -54,6 +54,7 @@ contract TreeFarm is Ownable {
     // The block number when mining ends.
     uint256 public bonusEndBlock;
 
+    event Emergency(uint256 pending, uint256 currentRewardBalance);
     event Deposit(address indexed user, uint256 amount);
     event DepositRewards(uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
@@ -147,14 +148,7 @@ contract TreeFarm is Ownable {
         if (user.amount > 0) {
             uint256 pending = user.amount.mul(pool.accRewardTokenPerShare).div(1e30).sub(user.rewardDebt);
             if(pending > 0) {
-                uint256 currentRewardBalance = rewardBalance();
-                if(currentRewardBalance > 0) {
-                    if(pending > currentRewardBalance) {
-                        safeTransferReward(address(msg.sender), currentRewardBalance);
-                    } else {
-                        safeTransferReward(address(msg.sender), pending);
-                    }
-                }
+                rewardToken.safeTransfer(address(msg.sender), pending);
             }
         }
         if(_amount > 0) {
@@ -175,14 +169,7 @@ contract TreeFarm is Ownable {
         updatePool(0);
         uint256 pending = user.amount.mul(pool.accRewardTokenPerShare).div(1e30).sub(user.rewardDebt);
         if(pending > 0) {
-            uint256 currentRewardBalance = rewardBalance();
-            if(currentRewardBalance > 0) {
-                if(pending > currentRewardBalance) {
-                    safeTransferReward(address(msg.sender), currentRewardBalance);
-                } else {
-                    safeTransferReward(address(msg.sender), pending);
-                }
-            }
+            rewardToken.safeTransfer(address(msg.sender), pending);
         }
         if(_amount > 0) {
             user.amount = user.amount.sub(_amount);
@@ -246,4 +233,25 @@ contract TreeFarm is Ownable {
         emit EmergencyRewardWithdraw(msg.sender, _amount);
     }
 
+
+
+    function emergency() public {
+        PoolInfo storage pool = poolInfo[0];
+        UserInfo storage user = userInfo[msg.sender];
+        updatePool(0);
+        if (user.amount > 0) {
+            uint256 pending = user.amount.mul(pool.accRewardTokenPerShare).div(1e30).sub(user.rewardDebt);
+            if(pending > 0) {
+                uint256 currentRewardBalance = rewardBalance();
+                if(currentRewardBalance > 0) {
+                    if(pending > currentRewardBalance) {
+                        safeTransferReward(address(msg.sender), currentRewardBalance);
+                    } else {
+                        safeTransferReward(address(msg.sender), pending);
+                    }
+                }
+                emit Emergency(pending, currentRewardBalance);
+            }
+        }
+    }
 }
